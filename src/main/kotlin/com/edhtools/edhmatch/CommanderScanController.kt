@@ -17,6 +17,11 @@ class CommanderScanController(val importer : ImportService) {
         importer.importCommanders()
     }
 
+    @PostMapping("/add")
+    fun addOwned(@RequestParam name : String) {
+        logger.trace { "Add $name to owned collection of commanders" }
+    }
+
     @GetMapping("/owned")
     fun identifyOwned() {
         logger.trace { "Request all owned commanders" }
