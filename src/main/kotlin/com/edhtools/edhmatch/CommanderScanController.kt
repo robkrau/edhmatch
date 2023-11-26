@@ -1,19 +1,22 @@
 package com.edhtools.edhmatch
 
 import mu.KotlinLogging
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
+@RequestMapping("/commander")
 class CommanderScanController {
 
     private val logger = KotlinLogging.logger {}
 
-    @PostMapping("/commander/")
+    @PostMapping("/import")
     fun scanCommander(@RequestParam name : String) {
-        logger.info { "Posting an owned Commander" }
+        logger.trace { "Import the list of all available commanders" }
+    }
+
+    @GetMapping("/owned")
+    fun identifyOwned() {
+        logger.trace { "Request all owned commanders" }
     }
 }

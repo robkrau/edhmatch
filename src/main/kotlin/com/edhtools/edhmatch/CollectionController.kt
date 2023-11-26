@@ -15,7 +15,7 @@ class CollectionController {
 
     @PostMapping("/update", consumes = ["multipart/form-data"])
     fun importCollection(@RequestParam("file") file : MultipartFile) {
-        logger.info { "Uploading card collection" }
+        logger.trace { "Uploading card collection" }
     }
 
 }
