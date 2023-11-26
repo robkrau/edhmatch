@@ -12,7 +12,7 @@ class CommanderScanController(val importer : ImportService) {
     private val logger = KotlinLogging.logger {}
 
     @PostMapping("/import")
-    fun scanCommander(@RequestParam name : String) {
+    fun scanCommander() {
         logger.trace { "Import the list of all available commanders" }
         importer.importCommanders()
     }
