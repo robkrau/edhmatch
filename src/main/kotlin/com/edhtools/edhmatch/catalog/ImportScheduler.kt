@@ -5,13 +5,13 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
 @EnableScheduling
-class ImportScheduler {
+class ImportScheduler(val importer : ImportService) {
 
     val logger = KotlinLogging.logger {}
 
     @Scheduled(cron = "\${catalog.import.cron}")
     fun importCommanders() {
         logger.info { "Importing catalog" }
-
+        importer.importCommanders()
     }
 }
