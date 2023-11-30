@@ -2,6 +2,7 @@ package com.edhtools.edhmatch.catalog
 
 import khttp.responses.Response
 import mu.KotlinLogging
+import org.json.JSONArray
 import org.json.JSONObject
 import org.springframework.stereotype.Service
 
@@ -24,8 +25,15 @@ class ImportService {
     }
 
     fun importPage(obj : JSONObject) {
-        // import stuff here
         logger.info { "Importing page" }
+
+        val cardsJSONArray : JSONArray = obj.getJSONArray("data")
+        for (i in 0 until cardsJSONArray.length()) {
+            val oracleId = cardsJSONArray.getJSONObject(i).get("oracle_id")
+            val cardName = cardsJSONArray.getJSONObject(i).get("name")
+
+            logger.info { "OracleId: $oracleId <-> Name: $cardName" }
+        }
 
         if ("true".compareTo(obj["has_more"].toString()) == 0) {
             // scryfall demands a 100ms delay between calls
