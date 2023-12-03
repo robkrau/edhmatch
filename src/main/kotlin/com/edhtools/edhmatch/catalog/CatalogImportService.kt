@@ -11,6 +11,8 @@ class CatalogImportService(val commanders : Commanders) {
 
     val logger = KotlinLogging.logger {}
 
+    val bannedCards = setOf("Faceless One", "Throne of the Grim Captain")
+
     fun importCommanders() {
         logger.info { "Importing all commanders" }
         val response : Response = khttp.get(
@@ -32,8 +34,9 @@ class CatalogImportService(val commanders : Commanders) {
             val oracleId = cardsJSONArray.getJSONObject(i).get("oracle_id")
             val cardName : String = cardsJSONArray.getJSONObject(i).getString("name")
 
-            if (!cardName.equals("Faceless One"))   // not cool - unknown to EDHrec
-            commanders.add(cardName)
+            if (!bannedCards.contains(cardName)) {   // not cool - unknown to EDHrec
+                commanders.add(cardName)
+            }
 
             logger.info { "OracleId: $oracleId <-> Name: $cardName" }
         }
