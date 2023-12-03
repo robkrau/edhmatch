@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled
 @EnableScheduling
 class ImportScheduler(val importer : CatalogImportService) {
 
-    val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
     @Scheduled(cron = "\${catalog.import.cron}")
     fun importCommanders() {

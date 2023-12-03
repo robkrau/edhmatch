@@ -1,5 +1,6 @@
 package com.edhtools.edhmatch
 
+import com.edhtools.edhmatch.collection.Collection
 import com.edhtools.edhmatch.collection.CollectionImportService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.PostMapping
@@ -10,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/collection")
-class CollectionController(val importer : CollectionImportService) {
+class CollectionController(
+        val importer : CollectionImportService,
+        val collection: Collection) {
 
     val logger = KotlinLogging.logger {}
 

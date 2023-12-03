@@ -1,10 +1,10 @@
-package com.edhtools.edhmatch.collection
+package com.edhtools.edhmatch.catalog
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
-class Collection {
+class Commanders {
 
     private val logger = KotlinLogging.logger {}
 

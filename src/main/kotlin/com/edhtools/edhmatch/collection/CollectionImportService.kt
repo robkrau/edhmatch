@@ -11,6 +11,8 @@ class CollectionImportService {
 
     val logger = KotlinLogging.logger {}
 
+    val collection = Collection()
+
     fun import(file : MultipartFile, skipFirstLine : Boolean) {
         if (file.isEmpty) {
             throw IllegalArgumentException("Cannot import empty file")
@@ -25,12 +27,15 @@ class CollectionImportService {
             br.readLine()
         }
 
-        val collection = Collection()
 
         br.forEachLine { l -> collection.add(l) }
 
         collection.logAllCards()
     }
 
+    fun getCollection() : Set<String> {
+        logger.info { "Requested collection (size: ${collection.get().size}" }
+        return collection.get()
+    }
 
 }

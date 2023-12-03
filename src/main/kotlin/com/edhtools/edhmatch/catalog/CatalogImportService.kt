@@ -7,7 +7,7 @@ import org.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
-class CatalogImportService {
+class CatalogImportService(val commanders : Commanders) {
 
     val logger = KotlinLogging.logger {}
 
@@ -22,7 +22,6 @@ class CatalogImportService {
         logger.info { "Received: ${obj["object"]}" }
 
         this.importPage(obj)
-
     }
 
     fun importPage(obj : JSONObject) {
@@ -31,7 +30,8 @@ class CatalogImportService {
         val cardsJSONArray : JSONArray = obj.getJSONArray("data")
         for (i in 0 until cardsJSONArray.length()) {
             val oracleId = cardsJSONArray.getJSONObject(i).get("oracle_id")
-            val cardName = cardsJSONArray.getJSONObject(i).get("name")
+            val cardName : String = cardsJSONArray.getJSONObject(i).getString("name")
+            commanders.add(cardName)
 
             logger.info { "OracleId: $oracleId <-> Name: $cardName" }
         }
@@ -44,6 +44,10 @@ class CatalogImportService {
             val response : Response = khttp.get(obj["next_page"].toString())
             importPage(response.jsonObject)
         }
+    }
+
+    fun getCommanders() : Set<String> {
+        return commanders.get()
     }
 
 
