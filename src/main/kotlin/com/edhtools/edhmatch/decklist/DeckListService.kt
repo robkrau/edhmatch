@@ -44,6 +44,7 @@ class DeckListService {
     }
 
     fun encodeCommanderName(commanderName : String) : String {
-        return ALPHANUM_REGEX.replace(commanderName, "").replace(" ", "-").lowercase()
+        val preSanitizedCommanderName = commanderName.substringBefore(" //").replace("ó", "o")
+        return ALPHANUM_REGEX.replace(preSanitizedCommanderName, "").replace(" ", "-").lowercase()
     }
 }

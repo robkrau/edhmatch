@@ -31,6 +31,8 @@ class CatalogImportService(val commanders : Commanders) {
         for (i in 0 until cardsJSONArray.length()) {
             val oracleId = cardsJSONArray.getJSONObject(i).get("oracle_id")
             val cardName : String = cardsJSONArray.getJSONObject(i).getString("name")
+
+            if (!cardName.equals("Faceless One"))   // not cool - unknown to EDHrec
             commanders.add(cardName)
 
             logger.info { "OracleId: $oracleId <-> Name: $cardName" }

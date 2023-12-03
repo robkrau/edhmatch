@@ -61,6 +61,7 @@ class CommanderScanController(
             val decklist: Set<String> = deckListService.loadDeckListFor(commander)
             val collection: Set<String> = collectionImportService.getCollection()
             matchService.evaluate(decklist, collection)
+            Thread.sleep(50)
         }
     }
 }
