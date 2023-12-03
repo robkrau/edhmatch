@@ -7,7 +7,7 @@ import org.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
-class ImportService {
+class CatalogImportService {
 
     val logger = KotlinLogging.logger {}
 
@@ -16,6 +16,7 @@ class ImportService {
         val response : Response = khttp.get(
             url = "https://api.scryfall.com/cards/search",
             params = mapOf("order" to "rarity", "dir" to "desc", "q" to "type:creature+type:legendary"))
+            // TODO: add support for legendary planeswalkers
 
         val obj : JSONObject = response.jsonObject
         logger.info { "Received: ${obj["object"]}" }

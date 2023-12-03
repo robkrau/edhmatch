@@ -1,13 +1,13 @@
 package com.edhtools.edhmatch
 
-import com.edhtools.edhmatch.catalog.ImportService
+import com.edhtools.edhmatch.catalog.CatalogImportService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 @RequestMapping("/commander")
-class CommanderScanController(val importer : ImportService) {
+class CommanderScanController(val importer : CatalogImportService) {
 
     private val logger = KotlinLogging.logger {}
 

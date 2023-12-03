@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 
 @EnableScheduling
-class ImportScheduler(val importer : ImportService) {
+class ImportScheduler(val importer : CatalogImportService) {
 
     val logger = KotlinLogging.logger {}
 
