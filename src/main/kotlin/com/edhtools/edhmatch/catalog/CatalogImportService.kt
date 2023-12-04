@@ -17,7 +17,8 @@ class CatalogImportService(val commanders : Commanders) {
         logger.info { "Importing all commanders" }
         val response : Response = khttp.get(
             url = "https://api.scryfall.com/cards/search",
-            params = mapOf("order" to "rarity", "dir" to "desc", "q" to "type:creature+type:legendary"))
+            //params = mapOf("order" to "rarity", "dir" to "desc", "q" to "type:creature+type:legendary"))
+            params = mapOf("order" to "rarity", "dir" to "desc", "q" to "is:commander+-t:background"))
             // TODO: add support for legendary planeswalkers
 
         val obj : JSONObject = response.jsonObject
