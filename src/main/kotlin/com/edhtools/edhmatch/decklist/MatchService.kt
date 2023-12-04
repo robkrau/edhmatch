@@ -8,7 +8,7 @@ class MatchService {
 
     val logger = KotlinLogging.logger {}
 
-    fun evaluate(decklist : Set<String>, collection : Set<String>) {
+    fun evaluate(decklist : Set<String>, collection : Set<String>) : Int {
         val decklistSize : Int = decklist.size
         var matches = 0
 
@@ -22,5 +22,7 @@ class MatchService {
         logger.info { "$matches / $decklistSize" }
         val ratio = (100 * matches) / decklistSize
         logger.info { "Ratio: $ratio" }
+
+        return ratio
     }
 }

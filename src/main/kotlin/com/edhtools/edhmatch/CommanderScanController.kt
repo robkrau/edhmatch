@@ -1,12 +1,10 @@
 package com.edhtools.edhmatch
 
 import com.edhtools.edhmatch.catalog.CatalogImportService
-import com.edhtools.edhmatch.collection.Collection
 import com.edhtools.edhmatch.collection.CollectionImportService
 import com.edhtools.edhmatch.decklist.DeckListService
 import com.edhtools.edhmatch.decklist.MatchService
 import mu.KotlinLogging
-import org.springframework.core.convert.TypeDescriptor
 import org.springframework.web.bind.annotation.*
 
 
@@ -56,12 +54,30 @@ class CommanderScanController(
     @GetMapping("/listOwned")
     fun listCardsForOwnedCommanders() {
         logger.trace { "Request all owned cards for owned commanders" }
+        val tierMap = mutableMapOf<Int, MutableSet<String>>()
+        var count = 0
         for (commander in identifyOwned()) {
             logger.info { "Evaluating $commander .." }
             val decklist: Set<String> = deckListService.loadDeckListFor(commander)
             val collection: Set<String> = collectionImportService.getCollection()
-            matchService.evaluate(decklist, collection)
+            val score = matchService.evaluate(decklist, collection)
+            count++
+
+            val commandersInTier = tierMap.getOrDefault(score, mutableSetOf())
+            commandersInTier.add(commander)
+            tierMap[score] = commandersInTier
+
             Thread.sleep(50)
+        }
+
+        logger.info { "Checked a total of $count owned commanders." }
+        logger.info { "Ranked list of commanders:" }
+
+        for (i in 100 downTo  0) {
+            val commandersInTier = tierMap[i]
+            if (commandersInTier != null) {
+                logger.info { "Commanders ranked with $i: ${commandersInTier.joinToString(" ++ ")}." }
+            }
         }
     }
 }
