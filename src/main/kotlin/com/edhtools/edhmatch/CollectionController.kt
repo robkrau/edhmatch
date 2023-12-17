@@ -12,8 +12,9 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/collection")
 class CollectionController(
-        val importer : CollectionImportService,
-        val collection: Collection) {
+    val importer : CollectionImportService,
+    val collection : Collection
+) {
 
     val logger = KotlinLogging.logger {}
 

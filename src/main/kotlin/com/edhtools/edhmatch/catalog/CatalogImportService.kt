@@ -7,39 +7,55 @@ import org.json.JSONObject
 import org.springframework.stereotype.Service
 
 @Service
-class CatalogImportService(val commanders : Commanders) {
+class CatalogImportService(
+        val commanders : Commanders,
+        val repo : CommanderRepository
+) {
 
     val logger = KotlinLogging.logger {}
 
     val bannedCards = setOf("Faceless One", "Throne of the Grim Captain")
 
+    val scannedCommanders = mutableListOf<Commander>()
+
     fun importCommanders() {
         logger.info { "Importing all commanders" }
         val response : Response = khttp.get(
             url = "https://api.scryfall.com/cards/search",
-            //params = mapOf("order" to "rarity", "dir" to "desc", "q" to "type:creature+type:legendary"))
             params = mapOf("order" to "rarity", "dir" to "desc", "q" to "is:commander+-t:background"))
-            // TODO: add support for legendary planeswalkers
 
         val obj : JSONObject = response.jsonObject
         logger.info { "Received: ${obj["object"]}" }
 
+        scannedCommanders.clear()
+
         this.importPage(obj)
+
+        if (repo.findAll().size != scannedCommanders.size) {
+            logger.info { "Reimporting Commanders.." }
+            repo.deleteAll()
+            repo.insert(scannedCommanders)
+        }
     }
 
     fun importPage(obj : JSONObject) {
-        logger.info { "Importing page" }
+        logger.info { "Scanning commander page" }
 
         val cardsJSONArray : JSONArray = obj.getJSONArray("data")
         for (i in 0 until cardsJSONArray.length()) {
-            val oracleId = cardsJSONArray.getJSONObject(i).get("oracle_id")
-            val cardName : String = cardsJSONArray.getJSONObject(i).getString("name")
+            val jsonCard = cardsJSONArray.getJSONObject(i);
+            //val oracleId = cardsJSONArray.getJSONObject(i).get("oracle_id")
+            val cardName : String = jsonCard.getString("name")
+
+
+
 
             if (!bannedCards.contains(cardName)) {   // not cool - unknown to EDHrec
-                commanders.add(cardName)
+                scannedCommanders.add(Commander(name =  cardName))
             }
 
-            logger.info { "OracleId: $oracleId <-> Name: $cardName" }
+            //logger.info { "OracleId: $oracleId <-> Name: $cardName" }
+            logger.info { "Name: $cardName" }
         }
 
         if ("true".compareTo(obj["has_more"].toString()) == 0) {
@@ -52,8 +68,8 @@ class CatalogImportService(val commanders : Commanders) {
         }
     }
 
-    fun getCommanders() : Set<String> {
-        return commanders.get()
+    fun getCommanders() : List<Commander> {
+        return repo.findAll()
     }
 
 

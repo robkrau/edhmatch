@@ -7,7 +7,7 @@ import java.io.BufferedReader
 import java.lang.IllegalArgumentException
 
 @Service
-class CollectionImportService {
+class CollectionImportService(val repo : CollectionRepository) {
 
     val logger = KotlinLogging.logger {}
 
@@ -27,15 +27,26 @@ class CollectionImportService {
             br.readLine()
         }
 
-
-        br.forEachLine { l -> collection.add(l) }
+        // TODO: collection is redundant
+        val collectionCards = mutableListOf<CollectionCard>()
+        br.forEachLine {
+            l -> collection.add(l)
+        }
 
         collection.logAllCards()
+
+        collection.get().forEach { card -> collectionCards.add(CollectionCard(card)) }
+
+
+        val cardCollection = UserCardCollection(userName = "me", collectionCards)
+
+        repo.insert(cardCollection)
     }
 
-    fun getCollection() : Set<String> {
-        logger.info { "Requested collection (size: ${collection.get().size}" }
-        return collection.get()
+    fun getCollection() : List<CollectionCard> {
+        val cardCollection = repo.findByUserName("me")
+        logger.info { "Requested collection (size: ${cardCollection.collection.size}" }
+        return cardCollection.collection
     }
 
 }

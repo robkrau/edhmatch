@@ -1,6 +1,7 @@
 package com.edhtools.edhmatch
 
 import com.edhtools.edhmatch.catalog.CatalogImportService
+import com.edhtools.edhmatch.collection.Collection
 import com.edhtools.edhmatch.collection.CollectionImportService
 import com.edhtools.edhmatch.decklist.DeckListService
 import com.edhtools.edhmatch.decklist.MatchService
@@ -14,6 +15,7 @@ class CommanderScanController(
         val importer : CatalogImportService,
         val deckListService: DeckListService,
         val collectionImportService: CollectionImportService,
+        val collectionService : Collection,
         val matchService: MatchService,
         val catalogImportService: CatalogImportService) {
 
@@ -33,11 +35,12 @@ class CommanderScanController(
     @GetMapping("/owned")
     fun identifyOwned() : Set<String> {
         logger.trace { "Request all owned commanders" }
-        val collection = collectionImportService.getCollection()
+        val cardCollection = collectionImportService.getCollection()
+        val cardNames : Set<String> = collectionService.getCardNamesFromCardCollection(cardCollection)
         val owned = mutableSetOf<String>()
         for (commander in catalogImportService.getCommanders()) {
-            if (collection.contains(commander)) {
-                owned.add(commander)
+            if (cardNames.contains(commander.name)) {
+                owned.add(commander.name)
             }
         }
         return owned
@@ -46,9 +49,25 @@ class CommanderScanController(
     @GetMapping("/listByCommander")
     fun listCardsOwnedForCommander(@RequestParam name : String) {
         logger.trace { "Request all owned cards for commander  $name" }
-        val decklist : Set<String> = deckListService.loadDeckListFor(name)
-        val collection : Set<String> = collectionImportService.getCollection()
-        matchService.evaluate(decklist, collection)
+        val decklist : Set<String> = deckListService.loadDeckListFromDBFor(name)
+        val cardCollection = collectionImportService.getCollection()
+        val cardNames : Set<String> = collectionService.getCardNamesFromCardCollection(cardCollection)
+        matchService.evaluate(decklist, cardNames)
+    }
+
+    @GetMapping("/persistForCommander")
+    fun persistForCommander(@RequestParam name : String) {
+        logger.trace { "Trying to persist commander decklist for $name" }
+        deckListService.persistDeckListFor(name)
+    }
+
+    @GetMapping("/persistForOwned")
+    fun persistForOwnedCommanders() {
+        for (commander in identifyOwned()) {
+            logger.info { "Persisting for $commander.." }
+            deckListService.persistDeckListFor(commander)
+            Thread.sleep(50)
+        }
     }
 
     @GetMapping("/listOwned")
@@ -58,9 +77,10 @@ class CommanderScanController(
         var count = 0
         for (commander in identifyOwned()) {
             logger.info { "Evaluating $commander .." }
-            val decklist: Set<String> = deckListService.loadDeckListFor(commander)
-            val collection: Set<String> = collectionImportService.getCollection()
-            val score = matchService.evaluate(decklist, collection)
+            val decklist: Set<String> = deckListService.loadDeckListFromDBFor(commander)
+            val cardCollection = collectionImportService.getCollection()
+            val cardNames : Set<String> = collectionService.getCardNamesFromCardCollection(cardCollection)
+            val score = matchService.evaluate(decklist, cardNames)
             count++
 
             val commandersInTier = tierMap.getOrDefault(score, mutableSetOf())

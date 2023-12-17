@@ -18,6 +18,12 @@ class Collection {
         collectedUniqueCards.forEach { logger.info(it) }
     }
 
+    fun getCardNamesFromCardCollection(cards : List<CollectionCard>) : Set<String> {
+        val setOfNames = mutableSetOf<String>()
+        cards.forEach { card -> setOfNames.add(card.name) }
+        return setOfNames
+    }
+
     fun get() : Set<String> {
         return collectedUniqueCards
     }
